@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBI Letter Automation System | State Bank of India</title>
+    
+    <!-- Meta tags for SEO and social media -->
+    <meta name="description" content="State Bank of India Letter Automation System - Streamline customer communication with automated letter generation and AI-powered analysis">
+    <meta name="keywords" content="SBI, State Bank of India, Letter Automation, Banking, Customer Communication">
+    <meta name="author" content="SBI IT Department">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    
+    <!-- External Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom CSS -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="sbi-logo">
+                <i class="fas fa-university fa-3x text-primary mb-3"></i>
+                <h4>SBI Letter Automation</h4>
+            </div>
+            <div class="loading-spinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            <p class="mt-3 text-muted">Initializing system...</p>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary shadow-lg fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <i class="fas fa-university me-2"></i>
+                <div class="brand-text">
+                    <div class="brand-title">SBI Letter Automation</div>
+                    <div class="brand-subtitle">Branch Management System</div>
+                </div>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#dashboard">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#analytics" onclick="showAnalytics()">
+                            <i class="fas fa-chart-line me-1"></i>Analytics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#templates" onclick="showTemplates()">
+                            <i class="fas fa-file-alt me-1"></i>Templates
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="navbar-nav">
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>Branch Manager
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="testEmailConfig()"><i class="fas fa-envelope me-2"></i>Test Email</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Dashboard Section -->
+        <div id="dashboardSection" class="content-section active">
+            <div class="container-fluid">
+                <!-- Stats Cards -->
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card stats-card stats-primary">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stats-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="stats-info">
+                                        <div class="stats-number" id="totalCustomers">0</div>
+                                        <div class="stats-label">Total Customers</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card stats-card stats-success">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stats-icon">
+                                        <i class="fas fa-file-alt"></i>
+                                    </div>
+                                    <div class="stats-info">
+                                        <div class="stats-number" id="lettersGenerated">0</div>
+                                        <div class="stats-label">Letters Generated</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card stats-card stats-info">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stats-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="stats-info">
+                                        <div class="stats-number" id="emailsSent">0</div>
+                                        <div class="stats-label">Emails Sent</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card stats-card stats-warning">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stats-icon">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </div>
+                                    <div class="stats-info">
+                                        <div class="stats-number" id="pendingActions">0</div>
+                                        <div class="stats-label">Pending Actions</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card quick-actions-card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-bolt text-warning me-2"></i>Quick Actions
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <button class="btn btn-outline-primary w-100 quick-action-btn" onclick="document.getElementById('excelFile').click()">
+                                            <i class="fas fa-upload fa-2x mb-2"></i>
+                                            <div>Upload Excel</div>
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button class="btn btn-outline-success w-100 quick-action-btn" onclick="generateQuickLetters()">
+                                            <i class="fas fa-magic fa-2x mb-2"></i>
+                                            <div>Quick Generate</div>
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button class="btn btn-outline-info w-100 quick-action-btn" onclick="showEmailComposer()">
+                                            <i class="fas fa-paper-plane fa-2x mb-2"></i>
+                                            <div>Send Emails</div>
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button class="btn btn-outline-secondary w-100 quick-action-btn" onclick="toggleChatbot()">
+                                            <i class="fas fa-robot fa-2x mb-2"></i>
+                                            <div>AI Assistant</div>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Welcome and Instructions -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="alert alert-info alert-dismissible fade show welcome-alert">
+                            <h4 class="alert-heading">
+                                <i class="fas fa-info-circle me-2"></i>Welcome to SBI Letter Automation System
+                            </h4>
+                            <p>
+                                Streamline your customer communication with our AI-powered letter automation platform. 
+                                Upload customer data, analyze issues, and generate personalized letters with just a few clicks.
+                            </p>
+                            <hr>
+                            <p class="mb-0">
+                                <strong>Quick Start:</strong> Upload Excel file → Select issue type → Analyze customers → Generate letters
+                            </p>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 1: File Upload -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card feature-card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">
+                                    <span class="step-number">1</span>
+                                    <i class="fas fa-upload text-success me-2"></i>Upload Customer Data
+                                </h5>
+                                <div class="upload-status" id="uploadStatus">
+                                    <span class="badge bg-secondary">No file selected</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <div class="upload-area" id="uploadArea" onclick="document.getElementById('excelFile').click()">
+                                            <div class="upload-content">
+                                                <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                                                <h5>Drag & Drop Excel File Here</h5>
+                                                <p class="text-muted">or click to browse</p>
+                                                <small class="text-muted">
+                                                    Supported formats: .xlsx, .xls • Maximum size: 10MB
+                                                </small>
+                                            </div>
+                                            <input type="file" id="excelFile" accept=".xlsx,.xls" style="display: none;">
+                                        </div>
+                                        
+                                        <div id="fileInfo" class="file-info mt-3" style="display: none;">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-file-excel text-success fa-2x me-3"></i>
+                                                    <div>
+                                                        <div class="file-name fw-bold"></div>
+                                                        <div class="file-details text-muted"></div>
+                                                    </div>
+                                                </div>
+                                                <button class="btn btn-outline-danger btn-sm" onclick="clearFile()">
+                                                    <i class="fas fa-times"></i> Remove
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="uploadProgress" class="progress mt-3" style="display: none;">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                                 role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-lg-4">
+                                        <div class="upload-requirements">
+                                            <h6 class="text-primary mb-3">
+                                                <i class="fas fa-list-check me-2"></i>File Requirements
+                                            </h6>
+                                            <ul class="requirements-list">
+                                                <li><i class="fas fa-check text-success me-2"></i>Excel format (.xlsx, .xls)</li>
+                                                <li><i class="fas fa-check text-success me-2"></i>Maximum 10MB file size</li>
+                                                <li><i class="fas fa-check text-success me-2"></i>Up to 10,000 customer records</li>
+                                                <li><i class="fas fa-check text-success me-2"></i>Required columns: NAME, ACCOUNT_NO, BALANCE</li>
+                                            </ul>
+                                            
+                                            <div class="mt-3">
+                                                <button class="btn btn-outline-primary btn-sm w-100" onclick="downloadSampleFile()">
+                                                    <i class="fas fa-download me-1"></i>Download Sample File
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Issue Selection -->
+                <div class="row mb-4" id="issueSection" style="display: none;">
+                    <div class="col-12">
+                        <div class="card feature-card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <span class="step-number">2</span>
+                                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>Select Issue Type & Configure
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="issueType" class="form-label fw-bold">Issue Type</label>
+                                        <select class="form-select form-select-lg" id="issueType">
+                                            <option value="">-- Select Issue Type --</option>
+                                            <option value="account_closure">🏦 Account Closure Notice</option>
+                                            <option value="kyc_update">📋 KYC Update Required</option>
+                                            <option value="loan_default">💰 Loan Payment Reminder</option>
+                                            <option value="fee_waiver">🎯 Fee Waiver Information</option>
+                                            <option value="document_expiry">📄 Document Expiry Notice</option>
+                                        </select>
+                                        <div class="form-text" id="issueDescription"></div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label for="customMessage" class="form-label fw-bold">Custom Instructions (Optional)</label>
+                                        <textarea class="form-control" id="customMessage" rows="3" 
+                                                placeholder="Add any specific instructions or custom message..."></textarea>
+                                        <div class="form-text">This message will be included in all generated letters</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mt-4">
+                                    <div class="col-md-6">
+                                        <div class="analysis-options">
+                                            <h6 class="text-primary mb-3">Analysis Options</h6>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="useAI" checked>
+                                                <label class="form-check-label" for="useAI">
+                                                    <i class="fas fa-brain text-primary me-1"></i>Enhanced AI Analysis (Recommended)
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="detailedAnalysis">
+                                                <label class="form-check-label" for="detailedAnalysis">
+                                                    <i class="fas fa-microscope text-info me-1"></i>Detailed Analysis Report
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="confidence-settings">
+                                            <h6 class="text-primary mb-3">Confidence Settings</h6>
+                                            <label for="confidenceThreshold" class="form-label">
+                                                Minimum Confidence: <span id="confidenceValue">70%</span>
+                                            </label>
+                                            <input type="range" class="form-range" id="confidenceThreshold" 
+                                                   min="50" max="95" value="70" oninput="updateConfidenceValue(this.value)">
+                                            <div class="form-text">Higher values = more precise filtering</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-center mt-4">
+                                    <button class="btn btn-primary btn-lg px-5" id="analyzeBtn" onclick="analyzeCustomers()" disabled>
+                                        <i class="fas fa-search me-2"></i>Analyze Customers
+                                        <div class="spinner-border spinner-border-sm ms-2" role="status" style="display: none;" id="analyzeSpinner">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Customer Results -->
+                <div class="row mb-4" id="customerSection" style="display: none;">
+                    <div class="col-12">
+                        <div class="card feature-card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">
+                                    <span class="step-number">3</span>
+                                    <i class="fas fa-users text-info me-2"></i>Affected Customers
+                                </h5>
+                                <div class="customer-stats">
+                                    <span class="badge bg-primary me-2" id="selectedCount">0 selected</span>
+                                    <span class="badge bg-secondary" id="totalAffected">0 total</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <!-- Customer Controls -->
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-outline-primary" onclick="selectAllCustomers()">
+                                                <i class="fas fa-check-square me-1"></i>Select All
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary" onclick="clearAllCustomers()">
+                                                <i class="fas fa-square me-1"></i>Clear All
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" onclick="selectHighPriority()">
+                                                <i class="fas fa-star me-1"></i>High Priority Only
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex gap-2">
+                                            <input type="text" class="form-control" id="customerSearch" 
+                                                   placeholder="Search customers..." onkeyup="filterCustomers()">
+                                            <button class="btn btn-outline-primary" onclick="exportCustomerList()">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Customer Table -->
+                                <div class="table-responsive">
+                                    <table class="table table-hover customer-table">
+                                        <thead class="table-dark sticky-top">
+                                            <tr>
+                                                <th width="50px">
+                                                    <input type="checkbox" class="form-check-input" id="selectAllCheckbox" 
+                                                           onchange="toggleAllCustomers()">
+                                                </th>
+                                                <th>Customer Details</th>
+                                                <th>Account Info</th>
+                                                <th>Contact</th>
+                                                <th>Issue Analysis</th>
+                                                <th width="100px">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="customerTableBody">
+                                            <!-- Populated dynamically -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <!-- Pagination -->
+                                <nav id="customerPagination" class="mt-4" style="display: none;">
+                                    <ul class="pagination justify-content-center" id="paginationList">
+                                        <!-- Pagination dynamically generated -->
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Actions -->
+                <div class="row mb-4" id="actionsSection" style="display: none;">
+                    <div class="col-12">
+                        <div class="card feature-card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <span class="step-number">4</span>
+                                    <i class="fas fa-cogs text-dark me-2"></i>Generate Letters & Send Communications
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-4">
+                                    <!-- Letter Generation -->
+                                    <div class="col-md-6">
+                                        <div class="action-group">
+                                            <h6 class="text-primary mb-3">
+                                                <i class="fas fa-file-alt me-2"></i>Letter Generation
+                                            </h6>
+                                            <div class="d-grid gap-2">
+                                                <button class="btn btn-success btn-lg" onclick="previewLetters()" id="previewBtn">
+                                                    <i class="fas fa-eye me-2"></i>Preview Letters
+                                                </button>
+                                                <button class="btn btn-primary btn-lg" onclick="generatePDFs()" id="pdfBtn">
+                                                    <i class="fas fa-file-pdf me-2"></i>Generate PDFs
+                                                    <span class="spinner-border spinner-border-sm ms-2" role="status" 
+                                                          style="display: none;" id="pdfSpinner"></span>
+                                                </button>
+                                                <button class="btn btn-outline-secondary" onclick="downloadAllPDFs()" id="downloadAllBtn">
+                                                    <i class="fas fa-download me-2"></i>Download All (ZIP)
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Email Communication -->
+                                    <div class="col-md-6">
+                                        <div class="action-group">
+                                            <h6 class="text-info mb-3">
+                                                <i class="fas fa-envelope me-2"></i>Email Communication
+                                            </h6>
+                                            <div class="d-grid gap-2">
+                                                <button class="btn btn-info btn-lg" onclick="sendEmails()" id="emailBtn">
+                                                    <i class="fas fa-paper-plane me-2"></i>Send Emails
+                                                    <span class="spinner-border spinner-border-sm ms-2" role="status" 
+                                                          style="display: none;" id="emailSpinner"></span>
+                                                </button>
+                                                <button class="btn btn-outline-info" onclick="scheduleEmails()" id="scheduleBtn">
+                                                    <i class="fas fa-clock me-2"></i>Schedule Send
+                                                </button>
+                                                <button class="btn btn-outline-warning" onclick="testEmailConfig()">
+                                                    <i class="fas fa-vial me-2"></i>Test Email Setup
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Advanced Options -->
+                                <div class="row mt-4">
+                                    <div class="col-12">
+                                        <div class="advanced-options">
+                                            <h6 class="text-secondary mb-3">
+                                                <i class="fas fa-cog me-2"></i>Advanced Options
+                                            </h6>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox" id="includeAttachment" checked>
+                                                        <label class="form-check-label" for="includeAttachment">
+                                                            Include PDF attachment in emails
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox" id="sendCopyToManager" checked>
+                                                        <label class="form-check-label" for="sendCopyToManager">
+                                                            Send copy to branch manager
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox" id="trackDelivery">
+                                                        <label class="form-check-label" for="trackDelivery">
+                                                            Enable delivery tracking
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Action Reports -->
+                                <div class="row mt-4">
+                                    <div class="col-12">
+                                        <div class="d-flex justify-content-center gap-3">
+                                            <button class="btn btn-outline-primary" onclick="generateReport()">
+                                                <i class="fas fa-chart-bar me-2"></i>Generate Report
+                                            </button>
+                                            <button class="btn btn-outline-success" onclick="exportToExcel()">
+                                                <i class="fas fa-file-excel me-2"></i>Export to Excel
+                                            </button>
+                                            <button class="btn btn-outline-info" onclick="printSummary()">
+                                                <i class="fas fa-print me-2"></i>Print Summary
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="row mb-4" id="resultsSection" style="display: none;">
+                    <div class="col-12">
+                        <div class="alert alert-success alert-dismissible fade show results-alert">
+                            <h5 class="alert-heading">
+                                <i class="fas fa-check-circle me-2"></i>Operation Completed Successfully!
+                            </h5>
+                            <div id="resultsContent">
+                                <!-- Results will be populated here -->
+                            </div>
+                            <button type="button" class="btn-close" onclick="hideResults()"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Section -->
+        <div id="analyticsSection" class="content-section">
+            <div class="container-fluid">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h2><i class="fas fa-chart-line me-2"></i>Analytics Dashboard</h2>
+                        <p class="text-muted">Track your letter automation performance and customer trends</p>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Letters Generated Over Time</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="lettersChart" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Issue Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="issuesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Templates Section -->
+        <div id="templatesSection" class="content-section">
+            <div class="container-fluid">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h2><i class="fas fa-file-alt me-2"></i>Letter Templates</h2>
+                        <p class="text-muted">Manage and customize your letter templates</p>
+                    </div>
+                </div>
+                
+                <div class="row" id="templatesGrid">
+                    <!-- Templates will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    
+    <!-- Letter Preview Modal -->
+    <div class="modal fade" id="letterPreviewModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-eye me-2"></i>Letter Preview
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="letter-preview" id="letterPreviewContent">
+                                <!-- Preview content -->
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="preview-info">
+                                <h6>Letter Information</h6>
+                                <div id="previewInfo">
+                                    <!-- Letter info -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="printPreview()">
+                        <i class="fas fa-print me-1"></i>Print
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="downloadPreviewPDF()">
+                        <i class="fas fa-download me-1"></i>Download PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Composer Modal -->
+    <div class="modal fade" id="emailComposerModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-envelope me-2"></i>Email Composer
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="emailForm">
+                        <div class="mb-3">
+                            <label for="emailSubject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="emailSubject">
+                        </div>
+                        <div class="mb-3">
+                            <label for="emailContent" class="form-label">Message</label>
+                            <textarea class="form-control" id="emailContent" rows="10"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="sendCustomEmails()">
+                        <i class="fas fa-paper-plane me-1"></i>Send Emails
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Modal -->
+    <div class="modal fade" id="progressModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="progressTitle">Processing...</h5>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="progress mb-3">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                             role="progressbar" id="progressBar" style="width: 0%"></div>
+                    </div>
+                    <div id="progressMessage">Please wait while we process your request...</div>
+                    <div class="mt-3">
+                        <small class="text-muted" id="progressDetails"></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot -->
+    <div class="chatbot-container" id="chatbotContainer">
+        <div class="chatbot-header" onclick="toggleChatbot()">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-robot me-2"></i>
+                <div>
+                    <div class="chatbot-title">AI Assistant</div>
+                    <div class="chatbot-status" id="chatbotStatus">Online</div>
+                </div>
+            </div>
+            <div class="chatbot-controls">
+                <button class="btn btn-sm btn-outline-light" onclick="clearChat()" title="Clear chat">
+                    <i class="fas fa-broom"></i>
+                </button>
+            </div>
+        </div>
+        <div class="chatbot-body" id="chatbotBody" style="display: none;">
+            <div class="chatbot-messages" id="chatMessages">
+                <div class="bot-message">
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <strong>Welcome to SBI AI Assistant!</strong><br>
+                        I can help you with:
+                        <ul class="mt-2 mb-1">
+                            <li>Excel file upload guidance</li>
+                            <li>Customer analysis questions</li>
+                            <li>Letter generation assistance</li>
+                            <li>Email sending support</li>
+                            <li>System troubleshooting</li>
+                        </ul>
+                        Type your question or say <strong>"help"</strong> for more options!
+                    </div>
+                </div>
+            </div>
+            <div class="chatbot-input">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="chatInput" 
+                           placeholder="Ask me anything..." onkeypress="handleChatKeyPress(event)">
+                    <button class="btn btn-primary" onclick="sendChatMessage()" id="sendChatBtn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div class="chat-suggestions mt-2" id="chatSuggestions">
+                    <button class="btn btn-outline-primary btn-sm me-1 mb-1" onclick="sendSuggestion('help')">Help</button>
+                    <button class="btn btn-outline-primary btn-sm me-1 mb-1" onclick="sendSuggestion('excel format')">Excel Format</button>
+                    <button class="btn btn-outline-primary btn-sm me-1 mb-1" onclick="sendSuggestion('account closure')">Account Closure</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer">
+        <!-- Toasts will be added here dynamically -->
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="js/app.js"></script>
+    <script src="js/excel-processor.js"></script>
+    <script src="js/pdf-generator.js"></script>
+    <script src="js/chatbot.js"></script>
+
+    <!-- Initialize Application -->
+    <script>
+        // Initialize the application when DOM is loaded
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     initializeApp();
+        //     setupDragAndDrop();
+        //     loadInitialData();
+            
+        //     // Hide loading screen
+        //     setTimeout(() => {
+        //         document.getElementById('loadingScreen').style.display = 'none';
+        //     }, 1500);
+        // });
+        // Initialize the application when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Small delay to ensure all elements are rendered
+    setTimeout(() => {
+        try {
+            initializeApp();
+            setupDragAndDrop();
+            loadInitialData();
+            
+            // Hide loading screen
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loadingScreen');
+                if (loadingScreen) {
+                    loadingScreen.style.display = 'none';
+                }
+            }, 1500);
+        } catch (error) {
+            console.error('App initialization failed:', error);
+            // Hide loading screen even on error
+            const loadingScreen = document.getElementById('loadingScreen');
+            if (loadingScreen) {
+                loadingScreen.style.display = 'none';
+            }
+        }
+    }, 100);
+});
+
+        
+
+    </script>
+</body>
+</html>

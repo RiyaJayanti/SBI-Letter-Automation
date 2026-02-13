@@ -1,0 +1,36 @@
+@"
+# Node dependencies
+node_modules/
+npm-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Environment files
+.env
+.env.local
+
+# Logs
+*.log
+logs/
+debug.log
+
+# Build outputs
+dist/
+build/
+
+# Editor settings
+.vscode/
+.idea/
+.DS_Store
+
+# Python cache (if backend uses Python)
+__pycache__/
+*.pyc
+
+# Docker
+*.pid
+docker-compose.override.yml
+
+# Temporary / sample data
+sample-data/
+"@ > .gitignore
