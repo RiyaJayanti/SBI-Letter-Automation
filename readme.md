@@ -30,9 +30,11 @@ npm install
 ### 4. Run the project
 ```
 npm start
+```
 
-##  Use Case
+## Use Cases
 
-- Banking document automation
-- Reducing manual letter creation
-- Improving efficiency in administrative tasks
+- Automates banking document generation.
+- Reduces manual letter creation and paperwork.
+- Improves efficiency in administrative tasks.
+
