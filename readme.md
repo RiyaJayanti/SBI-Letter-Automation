@@ -10,6 +10,29 @@ A comprehensive banking letter automation solution for State Bank of India branc
 - AI-powered customer analysis
 - Interactive chatbot assistance
 
-## Quick Start
+## Installation & Setup
 
-1. **Clone and Setup**
+### 1. Clone the repository
+```
+git clone https://github.com/YOUR_USERNAME/SBI-Letter-Automation.git
+```
+
+### 2. Navigate to project folder
+```
+cd SBI-Letter-Automation
+```
+
+### 3. Install dependencies
+```
+npm install
+```
+
+### 4. Run the project
+```
+npm start
+
+##  Use Case
+
+- Banking document automation
+- Reducing manual letter creation
+- Improving efficiency in administrative tasks
